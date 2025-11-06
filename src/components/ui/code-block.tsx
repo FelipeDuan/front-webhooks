@@ -31,6 +31,7 @@ export function CodeBlock({
     >
       <div
         className="[&_pre]:p-4 [&_pre]:text-sm [&_pre]:font-mono [&_pre]:leading-relaxed"
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: < explanation>
         dangerouslySetInnerHTML={{ __html: parsedCode }}
       />
     </div>
