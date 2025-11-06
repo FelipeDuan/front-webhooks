@@ -16,10 +16,38 @@
   --color-zinc-200: #e4e4e7; /* Primary text */
   --color-zinc-100: #f4f4f5; /* Bright text */
   --color-zinc-50: #fafafa; /* Brightest highlights */
+
+  --color-sidebar-thumb: oklch(0.25 0.02 260);
+  --color-sidebar-thumb-hover: oklch(0.35 0.02 260);
 }
 
 @layer base {
   body {
     @apply bg-zinc-950 text-zinc-100 antialiased;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--color-sidebar-thumb);
+    border-radius: 9999px;
+    transition: background-color 0.2s ease;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-sidebar-thumb-hover);
+  }
+
+  /* Firefox */
+  * {
+    scrollbar-width: auto;
+    scrollbar-color: var(--color-sidebar-thumb-hover) transparent;
   }
 }
