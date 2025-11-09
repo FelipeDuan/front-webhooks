@@ -1,12 +1,14 @@
 import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { Loader2, Wand2 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { webhookListSchema } from "../http/schemas/webhooks";
 import { WebhooksListItem } from "./webhooks-list-item";
 
 export function WebhooksList() {
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<IntersectionObserver>(null);
+
+  const [checkedWebhookIds, setCheckedWebhookIds] = useState<string[]>([]);
 
   const { data, hasNextPage, fetchNextPage, isFetchingNextPage } =
     useSuspenseInfiniteQuery({
@@ -33,7 +35,7 @@ export function WebhooksList() {
 
   useEffect(() => {
     if (observerRef.current) {
-      observerRef.current.disconnect;
+      observerRef.current.disconnect();
     }
 
     observerRef.current = new IntersectionObserver(
@@ -55,16 +57,49 @@ export function WebhooksList() {
 
     return () => {
       if (observerRef.current) {
-        observerRef.current.disconnect;
+        observerRef.current.disconnect();
       }
     };
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
+  function handleCheckWebhook(checkedWebhookId: string) {
+    if (checkedWebhookIds.includes(checkedWebhookId)) {
+      setCheckedWebhookIds((state) => {
+        return state.filter((webhookId) => webhookId !== checkedWebhookId);
+      });
+    } else {
+      setCheckedWebhookIds((state) => [...state, checkedWebhookId]);
+    }
+  }
+
+  function handleGenerateHandler() {
+    console.log(checkedWebhookIds);
+  }
+
+  const hasAnyWebhookChecked = checkedWebhookIds.length > 0;
+
   return (
     <div className="flex-1 overflow-y-auto">
       <div className="space-y-1 p-2">
+        <button
+          type="button"
+          disabled={!hasAnyWebhookChecked}
+          className="bg-indigo-400 text-white w-full rounded-lg flex items-center justify-center font-semibold gap-3 text-sm py-2 disabled:opacity-50 transition duration-200 cursor-pointer disabled:pointer-events-none"
+          onClick={() => handleGenerateHandler()}
+        >
+          <Wand2 className="size-4" />
+          Gerar handler
+        </button>
+      </div>
+
+      <div className="space-y-1 p-2">
         {webhooks.map((webhook) => (
-          <WebhooksListItem webhook={webhook} key={webhook.id} />
+          <WebhooksListItem
+            webhook={webhook}
+            key={webhook.id}
+            onWebhookChecked={handleCheckWebhook}
+            isWebhookChecked={checkedWebhookIds.includes(webhook.id)}
+          />
         ))}
 
         {hasNextPage && (
